@@ -9,6 +9,7 @@ import logging
 import settings.config_parser as config
 import kafka.errors
 
+
 class Producer(object):
     def __init__(self):
         self.producer = KafkaProducer(

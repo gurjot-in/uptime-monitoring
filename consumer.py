@@ -13,6 +13,7 @@ class Consumer(object):
                                       ssl_certfile=config.kafka.get('ssl_certfile'),
                                       ssl_keyfile=config.kafka.get('ssl_keyfile'),
                                       )
+
         self._metric_db = db.SiteMonitoring()
         if not self._metric_db.check_table_exists():
             self._metric_db.create_table()
@@ -20,6 +21,7 @@ class Consumer(object):
     def run(self):
         for msg in self.consumer:
             msg = json.loads(msg.value.decode('utf-8'))
+            print(msg)
             self._metric_db.create(url=msg.get('url'),
                                    status_code=msg.get('status_code'),
                                    check_string=msg.get('check_string'),

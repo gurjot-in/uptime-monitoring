@@ -18,6 +18,7 @@ class SiteMonitoring(object):
         else:
             cursor = con.cursor(cursor_factory=RealDictCursor)
             cursor.execute(query)
+            con.commit()
             return cursor, con
 
     def create_table(self):
