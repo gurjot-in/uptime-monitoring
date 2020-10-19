@@ -1,0 +1,31 @@
+postgres:
+  service_url: 'postgres://avnadmin:b3s4c4mpr2zkkvqr@pg-3f921fa9-codejam123-d2a5.aivencloud.com:28102/defaultdb?sslmode=require'
+
+kafka:
+  bootstrap_servers: 'kafka-32d0b65b-codejam123-d2a5.aivencloud.com:28104'
+  security_protocol: 'SSL'
+  ssl_cafile: 'creds/ca.pem'
+  ssl_certfile: 'creds/service.cert'
+  ssl_keyfile: 'creds/service.key'
+  topic: 'helsinki'
+
+websites:
+- url: 'https://www.google.com'
+  check_string: ''
+  interval: 20
+
+- url: 'https://aiven.io/'
+  check_string: 'pipelines'
+  interval: 40
+
+- url: 'https://github.com/'
+  check_string: ''
+  interval: 150
+
+- url: 'https://help.aiven.io/en/articles/489573-getting-started-with-aiven-postgresql'
+  check_string: 'Python example'
+  interval: 200
+
+- url: 'https://github.com/aiven'
+  check_string: 'Helsinki, Finland'
+  interval: 4
