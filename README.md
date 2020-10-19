@@ -15,7 +15,8 @@ pip install -r requirements.txt
 
 ## Configuration
 
- - Edit configuration file in settings/conf.yaml
+ - Create a new kafka topic in Aiven console
+ - Edit configuration file and keys in `settings/conf.yaml` as per your service account
 
 ## Usage
 
