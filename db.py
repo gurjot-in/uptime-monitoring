@@ -1,17 +1,22 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
-
-from settings.config_parser import postgres_config
+import logging
+import settings.config_parser as config
 
 
 class SiteMonitoring(object):
     TABLE_NAME = 'metrics'
-
-    def __init__(self):
-        uri = postgres_config['service_url']
-        self._con = psycopg2.connect(uri)
-        self._con.autocommit = True
-        self._cursor = self._con.cursor(cursor_factory=RealDictCursor)
+    
+    @staticmethod
+    def _execute_sql(query):
+        try:
+            con = psycopg2.connect(config.postgres.get('service_url'))
+        except psycopg2.OperationalError as e:
+            logging.error(e)
+        else:
+            cursor = con.cursor(cursor_factory=RealDictCursor)
+            cursor.execute(query)
+            return cursor
 
     def create_table(self):
         query = """CREATE TABLE {table_name} (
@@ -19,35 +24,39 @@ class SiteMonitoring(object):
                 url VARCHAR NOT NULL,
                 status_code SMALLINT NOT NULL,
                 response_time DECIMAL NOT NULL,
+                check_string VARCHAR NULL, 
                 regex_match BOOLEAN,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                 );""".format(table_name=SiteMonitoring.TABLE_NAME)
 
-        self._cursor.execute(query)
+        self._execute_sql(query)
 
-    def create(self, url, status_code, response_time, regex_match):
-        query = """INSERT INTO {table_name} (url, status_code, response_time, regex_match)
-                   VALUES ('{url}','{status_code}', '{response_time}', '{regex_match}'); """.format(
+    def create(self, url, status_code, check_string, response_time, regex_match):
+        query = """INSERT INTO {table_name} (url, status_code, response_time, check_string, regex_match)
+                   VALUES ('{url}','{status_code}', '{response_time}', '{check_string}', '{regex_match}'); """.format(
             table_name=SiteMonitoring.TABLE_NAME,
             url=url,
             status_code=status_code,
             response_time=response_time,
+            check_string=check_string,
             regex_match=regex_match)
 
-        print(query)
-        print(self._cursor.execute(query))
+        self._execute_sql(query)
+
 
     def check_table_exists(self):
         query = """SELECT * FROM information_schema.tables
                     WHERE table_name = '{table_name}'""".format(table_name=SiteMonitoring.TABLE_NAME)
-        self._cursor.execute(query)
-        return bool(self._cursor.rowcount)
+
+
+        cursor = self._execute_sql(query)
+        return bool(cursor.rowcount)
 
     def drop_table(self):
         query = """DROP TABLE {table_name};""".format(table_name=SiteMonitoring.TABLE_NAME)
-        self._cursor.execute(query)
+        self._execute_sql(query)
 
     def get_records(self):
         query = """select * from {table_name}""".format(table_name=SiteMonitoring.TABLE_NAME)
-        self._cursor.execute(query)
-        return self._cursor.fetchall()
+        cursor = self._execute_sql(query)
+        return cursor.fetchall()

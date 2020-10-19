@@ -1,10 +1,14 @@
-"""Load configuration from .ini file."""
-import configparser
+"""Load configuration from config.yaml file."""
+import yaml
 
+with open("settings/conf.yaml", 'r') as stream:
+    try:
+        config = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
 
-# Read local file `config.ini`.
-config = configparser.ConfigParser()
-config.read('settings/config.ini')
-kafka_config = dict(config.items('KAFKA'))
-postgres_config = dict(config.items('POSTGRES'))
-monitoring_config = dict(config.items('MONITORING'))
+postgres = config.get('postgres')
+kafka = config.get('kafka')
+sites = config.get('websites')
+
+print(sites)

@@ -3,12 +3,12 @@ import json
 from kafka import KafkaConsumer
 
 import db
-from settings.config_parser import kafka_config
+import settings.config_parser as config
 
 
 class Consumer(object):
     def __init__(self):
-        self.consumer = KafkaConsumer("helsinki", **kafka_config)
+        self.consumer = KafkaConsumer("helsinki", **config.kafka)
         self._metric_db = db.SiteMonitoring()
 
         if not self._metric_db.check_table_exists():
@@ -22,6 +22,7 @@ class Consumer(object):
             print("Received: {}".format(msg))
             self._metric_db.create(url=msg.get('url'),
                                    status_code=msg.get('status_code'),
+                                   check_string=msg.get('check_string'),
                                    response_time=msg.get('response_time'),
                                    regex_match=msg.get('regex_match')
                                    )

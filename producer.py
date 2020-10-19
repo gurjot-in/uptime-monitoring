@@ -6,23 +6,19 @@ import requests
 import schedule
 from kafka import KafkaProducer
 
-from settings.config_parser import kafka_config, monitoring_config
+import settings.config_parser as config
 
 
 class Producer(object):
     def __init__(self):
-        self.producer = KafkaProducer(**kafka_config)
-
-    @staticmethod
-    def fetch_website_config():
-        return monitoring_config
+        self.producer = KafkaProducer(**config.kafka)
 
     def monitor_websites(self):
-        website_config = self.fetch_website_config()
-        url = website_config.get('url')
-        check_string = website_config.get('check_string')
-        check_interval = website_config.get('check_interval')
-        schedule.every(int(check_interval)).seconds.do(self._run_job, url=url, check_string=check_string)
+        for site in config.sites:
+            url = site.get('url')
+            check_string = site.get('check_string')
+            check_interval = site.get('interval')
+            schedule.every(int(check_interval)).seconds.do(self._run_job, url=url, check_string=check_string)
 
         while 1:
             schedule.run_pending()
@@ -35,6 +31,7 @@ class Producer(object):
         message = dict({'status_code': response.status_code,
                         'url': url,
                         'response_time': response.elapsed.total_seconds(),
+                        'check_string': check_string,
                         'regex_match': regex_match
                         })
 
