@@ -1,8 +1,9 @@
 
 
+
 # Uptime Monitoring
 
-Website availability checker using fully managed kafka and postgres services.
+Website availability checker service to fetch response metrics from configured websites and push them to postgres via kafka . 
 
 ## Installation
 
