@@ -1,4 +1,5 @@
 
+
 # Uptime Monitoring
 
 Website availability checker using fully managed kafka and postgres services.
@@ -23,6 +24,8 @@ pip install -r requirements.txt
  
  
 ## Usage
+
+Run these commands in separate terminals to start producer and consumer
 
 ```bash
 python producer.py
